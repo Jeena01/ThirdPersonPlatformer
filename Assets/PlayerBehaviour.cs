@@ -9,10 +9,10 @@ public class PlayerBehaviour : MonoBehaviour
     Vector3 moveDirection;
     Rigidbody rb;
 
-    public float playerHeight;
+    public float jumpForce;
     public LayerMask whatIsGround;
-    bool grounded;
-    public float groundDrag;
+    private bool grounded;
+    private bool canJump = true;
 
 
 
@@ -23,23 +23,19 @@ public class PlayerBehaviour : MonoBehaviour
     }
     private void Update()
     {
-        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
-        MyInput();
-        if (grounded)
-            rb.linearDamping = groundDrag;
-        else
-            rb.linearDamping = 0;
-    }
-    private void FixedUpdate()
-    {
-        MovePlayer();
-    }
-    private void MyInput()
-    {
+       
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
+        MovePlayer();
 
+        if (Input.GetKeyDown(KeyCode.Space) && canJump)
+        {
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
+        
     }
+    
     private void MovePlayer()
     {
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
